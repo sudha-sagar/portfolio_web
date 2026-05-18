@@ -485,7 +485,6 @@ function FaiLearnNote({
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const isQuick = perspective === 'quick';
-  const isSkeptical = perspective === 'skeptical';
 
   const handleTap = () => {
     if (isTouch) {
@@ -1017,9 +1016,8 @@ export function MainLayout() {
 
   const renderContact = () => {
     const isSkeptical = perspective === 'skeptical';
-    const isQuick = perspective === 'quick';
 
-    const cardSpring = { type: "spring", stiffness: 300, damping: 25 };
+    const cardSpring = { type: "spring" as const, stiffness: 300, damping: 25 };
 
     const GithubIcon = ({ size = 16, className = "" }: { size?: number, className?: string }) => (
       <svg 
@@ -1171,7 +1169,7 @@ export function MainLayout() {
                       item.action();
                     }
                   }}
-                  whileHover={isTouch || isSkeptical ? undefined : { y: -4, shadow: "0 8px 30px rgba(15,23,42,0.04)" }}
+                  whileHover={isTouch || isSkeptical ? undefined : { y: -4, boxShadow: "0 8px 30px rgba(15,23,42,0.04)" }}
                   whileTap={{ scale: 0.98 }}
                   transition={cardSpring}
                   className="w-full cursor-pointer touch-manipulation select-none"

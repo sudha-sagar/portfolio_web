@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   FileText, X, Download, Eye, ExternalLink, Mail, Phone, 
@@ -107,7 +107,7 @@ export function ResumeArchive({
 
   // Spring physical physics for the card trigger
   const triggerSpring = {
-    type: "spring",
+    type: "spring" as const,
     stiffness: 70,
     damping: 24,
     mass: 1.1

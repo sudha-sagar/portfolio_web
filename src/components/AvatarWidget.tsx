@@ -194,7 +194,7 @@ export function AvatarWidget({ perspective = "curious" }: { perspective?: string
       >
         {/* Navigation Icons Reveal */}
         <AnimatePresence>
-          {proximity > 0.05 && navItems.map((item, index) => {
+          {proximity > 0.05 && navItems.map((item) => {
             const Icon = item.icon;
             // Interpolate position based on proximity so they organically emerge
             const displayX = item.x * Math.min(1, proximity * 1.5);
