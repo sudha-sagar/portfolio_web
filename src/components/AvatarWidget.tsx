@@ -17,86 +17,77 @@ function Model({
   hoveredItem: string | null, 
   positionY: number
 }) {
-  try {
-    const { scene } = useGLTF(modelPath, true);
-    const ref = useRef<THREE.Group>(null);
-    const skinMaterialsRef = useRef<THREE.MeshStandardMaterial[]>([]);
-    const otherMaterialsRef = useRef<THREE.MeshStandardMaterial[]>([]);
-    
-    useEffect(() => {
-      skinMaterialsRef.current = [];
-      otherMaterialsRef.current = [];
-      scene.traverse((child) => {
-        if ((child as THREE.Mesh).isMesh) {
-          const mesh = child as THREE.Mesh;
-          const material = mesh.material as THREE.MeshStandardMaterial;
-          if (material) {
-            material.transparent = true;
-            const name = (mesh.name + " " + material.name).toLowerCase();
-            if (name.includes("skin") || name.includes("head") || name.includes("face") || name.includes("body")) {
-              skinMaterialsRef.current.push(material);
-            } else {
-              otherMaterialsRef.current.push(material);
-            }
+  const { scene } = useGLTF(modelPath, true);
+  const ref = useRef<THREE.Group>(null);
+  const skinMaterialsRef = useRef<THREE.MeshStandardMaterial[]>([]);
+  const otherMaterialsRef = useRef<THREE.MeshStandardMaterial[]>([]);
+  
+  useEffect(() => {
+    skinMaterialsRef.current = [];
+    otherMaterialsRef.current = [];
+    scene.traverse((child) => {
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        const material = mesh.material as THREE.MeshStandardMaterial;
+        if (material) {
+          material.transparent = true;
+          const name = (mesh.name + " " + material.name).toLowerCase();
+          if (name.includes("skin") || name.includes("head") || name.includes("face") || name.includes("body")) {
+            skinMaterialsRef.current.push(material);
+          } else {
+            otherMaterialsRef.current.push(material);
           }
         }
-      });
-    }, [scene]);
-
-    useFrame((state) => {
-      if (ref.current) {
-        // Subtle breathing motion
-        ref.current.position.y = positionY + Math.sin(state.clock.elapsedTime) * 0.02;
-        
-        // Scale increases organically with proximity, but restrained
-        const targetScale = 1.35 + proximity * 0.08;
-        ref.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.05);
-        
-        // Minimal parallax rotation influenced by pointer and proximity
-        const targetRotationX = proximity > 0 ? -(state.pointer.y * Math.PI) / 16 * proximity : 0;
-        const targetRotationY = proximity > 0 ? -(state.pointer.x * Math.PI) / 12 * proximity : 0;
-        ref.current.rotation.x += (targetRotationX - ref.current.rotation.x) * 0.05;
-        ref.current.rotation.y += (targetRotationY - ref.current.rotation.y) * 0.05;
       }
+    });
+  }, [scene]);
 
-      // Calm, light-themed material states
-      const targetColor = new THREE.Color(0xF1F5F9);
-      let targetMetalness = 0.1;
-      let targetRoughness = 0.8;
-      let targetOpacity = 1.0;
+  useFrame((state) => {
+    if (ref.current) {
+      // Subtle breathing motion
+      ref.current.position.y = positionY + Math.sin(state.clock.elapsedTime) * 0.02;
+      
+      // Scale increases organically with proximity, but restrained
+      const targetScale = 1.35 + proximity * 0.08;
+      ref.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.05);
+      
+      // Minimal parallax rotation influenced by pointer and proximity
+      const targetRotationX = proximity > 0 ? -(state.pointer.y * Math.PI) / 16 * proximity : 0;
+      const targetRotationY = proximity > 0 ? -(state.pointer.x * Math.PI) / 12 * proximity : 0;
+      ref.current.rotation.x += (targetRotationX - ref.current.rotation.x) * 0.05;
+      ref.current.rotation.y += (targetRotationY - ref.current.rotation.y) * 0.05;
+    }
 
-      if (hoveredItem) {
-        targetColor.setHex(0xE2E8F0);
-        targetRoughness = 0.6;
-      }
+    // Calm, light-themed material states
+    const targetColor = new THREE.Color(0xF1F5F9);
+    let targetMetalness = 0.1;
+    let targetRoughness = 0.8;
+    let targetOpacity = 1.0;
 
-      const skinColor = hoveredItem ? targetColor : new THREE.Color(0xFDE7D6);
-      const otherColor = hoveredItem ? targetColor : new THREE.Color(0xF8FAFC);
+    if (hoveredItem) {
+      targetColor.setHex(0xE2E8F0);
+      targetRoughness = 0.6;
+    }
 
-      skinMaterialsRef.current.forEach((mat) => {
-        mat.color.lerp(skinColor, 0.1);
-        mat.opacity += (targetOpacity - mat.opacity) * 0.1;
-        mat.metalness += (targetMetalness - mat.metalness) * 0.1;
-        mat.roughness += (targetRoughness - mat.roughness) * 0.1;
-      });
+    const skinColor = hoveredItem ? targetColor : new THREE.Color(0xFDE7D6);
+    const otherColor = hoveredItem ? targetColor : new THREE.Color(0xF8FAFC);
 
-      otherMaterialsRef.current.forEach((mat) => {
-        mat.color.lerp(otherColor, 0.1);
-        mat.opacity += (targetOpacity - mat.opacity) * 0.1;
-        mat.metalness += (targetMetalness - mat.metalness) * 0.1;
-        mat.roughness += (targetRoughness - mat.roughness) * 0.1;
-      });
+    skinMaterialsRef.current.forEach((mat) => {
+      mat.color.lerp(skinColor, 0.1);
+      mat.opacity += (targetOpacity - mat.opacity) * 0.1;
+      mat.metalness += (targetMetalness - mat.metalness) * 0.1;
+      mat.roughness += (targetRoughness - mat.roughness) * 0.1;
     });
 
-    return <primitive object={scene} ref={ref} position={[0, positionY, 0]} />;
-  } catch (e) {
-    return (
-      <mesh position={[0, positionY, 0]}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#E2E8F0" />
-      </mesh>
-    );
-  }
+    otherMaterialsRef.current.forEach((mat) => {
+      mat.color.lerp(otherColor, 0.1);
+      mat.opacity += (targetOpacity - mat.opacity) * 0.1;
+      mat.metalness += (targetMetalness - mat.metalness) * 0.1;
+      mat.roughness += (targetRoughness - mat.roughness) * 0.1;
+    });
+  });
+
+  return <primitive object={scene} ref={ref} position={[0, positionY, 0]} />;
 }
 
 function Fallback() {
@@ -120,6 +111,17 @@ const navItems = [
 export function AvatarWidget({ perspective = "curious" }: { perspective?: string }) {
   const [proximity, setProximity] = useState(0);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [isTouch, setIsTouch] = useState(false);
+  const [mobileExpanded, setMobileExpanded] = useState(false);
+
+  useEffect(() => {
+    const checkTouch = () => {
+      setIsTouch(window.matchMedia("(hover: none) and (pointer: coarse)").matches);
+    };
+    checkTouch();
+    window.addEventListener("resize", checkTouch);
+    return () => window.removeEventListener("resize", checkTouch);
+  }, []);
 
   const isQuick = perspective === 'quick';
   const isSkeptical = perspective === 'skeptical';
@@ -143,6 +145,7 @@ export function AvatarWidget({ perspective = "curious" }: { perspective?: string
   const tapScale = isCurious ? 0.90 : 0.95;
 
   const handlePointerMove = (e: React.PointerEvent) => {
+    if (isTouch) return;
     const rect = e.currentTarget.getBoundingClientRect();
     
     // Shift visual center math to match exact positioning coordinates: left-[38%] top-[28%]
@@ -182,7 +185,16 @@ export function AvatarWidget({ perspective = "curious" }: { perspective?: string
   };
 
   const handlePointerLeave = () => {
+    if (isTouch) return;
     setProximity(0);
+  };
+
+  const handleModelTap = (e: React.MouseEvent) => {
+    if (!isTouch) return;
+    e.stopPropagation();
+    const nextState = !mobileExpanded;
+    setMobileExpanded(nextState);
+    setProximity(nextState ? 1 : 0);
   };
 
   return (
@@ -209,7 +221,13 @@ export function AvatarWidget({ perspective = "curious" }: { perspective?: string
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 onMouseEnter={() => setHoveredItem(item.id)}
                 onMouseLeave={() => setHoveredItem(null)}
-                onClick={() => document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' })}
+                onClick={() => {
+                  document.getElementById(item.id)?.scrollIntoView({ behavior: 'smooth' });
+                  if (isTouch) {
+                    setMobileExpanded(false);
+                    setProximity(0);
+                  }
+                }}
                 className="absolute left-[38%] top-[28%] -ml-6 -mt-6 w-12 h-12 flex flex-col items-center justify-center gap-1 cursor-pointer group z-30"
               >
                 <motion.div 
@@ -227,6 +245,15 @@ export function AvatarWidget({ perspective = "curious" }: { perspective?: string
             );
           })}
         </AnimatePresence>
+
+        {/* Transparent Touch Overlay for Mobile/Touch Toggle */}
+        {isTouch && (
+          <div 
+            onClick={handleModelTap}
+            className="absolute top-[28%] left-[38%] -translate-x-1/2 -translate-y-1/2 w-[220px] h-[280px] rounded-full z-25 cursor-pointer"
+            style={{ touchAction: 'manipulation' }}
+          />
+        )}
 
         {/* Atmospheric Radial Depth Anchor */}
         <div 
@@ -271,3 +298,6 @@ export function AvatarWidget({ perspective = "curious" }: { perspective?: string
     </div>
   );
 }
+
+// Preload the heavy 3D model asset so it starts downloading immediately on bundle load
+useGLTF.preload("/avatar2.glb");
