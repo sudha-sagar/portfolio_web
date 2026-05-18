@@ -553,6 +553,32 @@ export function ResumeArchive({
                             </li>
                           </ul>
                         </div>
+
+                        {/* UI Library */}
+                        <div className="group">
+                          <div className="flex items-baseline justify-between gap-4 mb-2">
+                            <h4 className="text-[16px] md:text-[17px] font-bold text-[#0F172A] group-hover:text-[#3B82F6] transition-colors">
+                              UI Library <span className="text-[13px] font-normal text-slate-400">| Dynamic Component Sandbox</span>
+                            </h4>
+                            <div className="flex gap-3 text-[12px] font-bold text-[#3B82F6] uppercase tracking-wide flex-shrink-0">
+                              <a href="https://ui-library-seven-beryl.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-0.5">Live <ExternalLink size={10} /></a>
+                              <a href="https://github.com/sudha-sagar" target="_blank" rel="noopener noreferrer" className="hover:underline text-slate-400">Code</a>
+                            </div>
+                          </div>
+                          <p className="text-[13.5px] text-[#475569] leading-relaxed mb-2.5">
+                            Engineered a high-performance visual playground designed to test, preview, and compare diverse design aesthetics (e.g., glassmorphism, neo-brutalism, flat minimalism).
+                          </p>
+                          <ul className="list-none pl-0 flex flex-col gap-1.5 text-[13px] text-[#64748B]">
+                            <li className="flex items-start gap-2">
+                              <span className="text-[#3B82F6] mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />
+                              <span>Built with modular React, Vite, and Tailwind CSS to ensure lightning-fast component rendering and real-time layout comparisons.</span>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="text-[#3B82F6] mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full bg-[#3B82F6]" />
+                              <span>Created a robust component showcase catalog covering button effects, custom navigation flows, responsive card structures, and spring physics.</span>
+                            </li>
+                          </ul>
+                        </div>
                       </div>
                     </div>
 

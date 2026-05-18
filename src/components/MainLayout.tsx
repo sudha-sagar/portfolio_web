@@ -81,7 +81,22 @@ const EXPERIMENTS = [
     tags: ["AI Voice Assistant", "System Automation", "Speech Recognition", "Local Scripts"],
     bgColor: "bg-[#FAF8F5]",
     borderRadius: "rounded-[48px_16px_48px_16px]",
-    className: "col-span-12 lg:col-span-12"
+    className: "col-span-12 lg:col-span-6"
+  },
+  {
+    title: "UI Library",
+    subtitle: "Dynamic Component Sandbox",
+    description: "A high-performance visual playground designed to test, preview, and compare diverse design aesthetics (e.g., glassmorphism, neo-brutalism, flat minimalism).",
+    pillars: [
+      { label: "Design Sandbox", desc: "Sandbox environment to preview interactive cards & layouts.", icon: PenTool },
+      { label: "Modular Builds", desc: "Crafted with Vite and React for lightning-fast rendering.", icon: Layers },
+      { label: "Style Compare", desc: "Compare glassmorphism, neo-brutalism, and minimalist aesthetics.", icon: Sliders }
+    ],
+    tags: ["React", "Vite", "Tailwind CSS", "Interactive Sandbox", "Design Tokens"],
+    link: "https://ui-library-seven-beryl.vercel.app/",
+    bgColor: "bg-[#F3F1FF]",
+    borderRadius: "rounded-[32px_12px_32px_12px]",
+    className: "col-span-12 lg:col-span-6"
   }
 ];
 
