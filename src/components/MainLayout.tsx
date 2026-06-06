@@ -24,7 +24,7 @@ const EXPERIMENTS = [
     link: "https://zep-menu.vercel.app/",
     bgColor: "bg-[#FFFFFF]",
     borderRadius: "rounded-[36px]",
-    className: "col-span-12 lg:col-span-7"
+    className: "col-span-6 md:col-span-12 lg:col-span-7"
   },
   {
     title: "Underneath",
@@ -39,7 +39,7 @@ const EXPERIMENTS = [
     link: "https://underneath-gamma.vercel.app/",
     bgColor: "bg-[#E6F4F8]",
     borderRadius: "rounded-[32px_32px_12px_32px]",
-    className: "col-span-12 lg:col-span-5"
+    className: "col-span-6 md:col-span-12 lg:col-span-5"
   },
   {
     title: "Threat Detection System",
@@ -54,7 +54,7 @@ const EXPERIMENTS = [
     link: "https://hotel-security-threat-detection.vercel.app/",
     bgColor: "bg-[#FFF4E8]",
     borderRadius: "rounded-[28px]",
-    className: "col-span-12 lg:col-span-6"
+    className: "col-span-6 md:col-span-12 lg:col-span-6"
   },
   {
     title: "Spending Store",
@@ -69,7 +69,7 @@ const EXPERIMENTS = [
     link: "https://sudha-sagar.github.io/spending-store/",
     bgColor: "bg-[#EDF7F1]",
     borderRadius: "rounded-[36px_24px_36px_24px]",
-    className: "col-span-12 lg:col-span-6"
+    className: "col-span-6 md:col-span-12 lg:col-span-6"
   },
   {
     title: "Bumblebee",
@@ -82,7 +82,7 @@ const EXPERIMENTS = [
     tags: ["AI Voice Assistant", "System Automation", "Speech Recognition", "Local Scripts"],
     bgColor: "bg-[#FAF8F5]",
     borderRadius: "rounded-[48px_16px_48px_16px]",
-    className: "col-span-12 lg:col-span-6"
+    className: "col-span-6 md:col-span-12 lg:col-span-6"
   },
   {
     title: "UI Library",
@@ -97,7 +97,7 @@ const EXPERIMENTS = [
     link: "https://ui-library-seven-beryl.vercel.app/",
     bgColor: "bg-[#F3F1FF]",
     borderRadius: "rounded-[32px_12px_32px_12px]",
-    className: "col-span-12 lg:col-span-6"
+    className: "col-span-6 md:col-span-12 lg:col-span-6"
   }
 ];
 
@@ -245,7 +245,7 @@ function FloatingCognitiveSpace({
         {/* 2. Philosophy (Top Right green-ish panel) */}
         <CognitiveObject 
           perspective={perspective}
-          className="col-span-12 md:col-span-5 md:col-start-8"
+          className="col-span-12 md:col-span-5 md:col-start-8 hidden md:block"
           bgColor="bg-[#E6F4F8]" 
           borderRadius="rounded-[32px_32px_32px_12px]"
         >
@@ -681,23 +681,23 @@ export function MainLayout() {
                 
                 {/* Top Header & Subtitle */}
                 <div>
-                  <div className="flex items-center justify-between gap-[16px] mb-[8px]">
-                    <h3 className={`font-black text-[#0F172A] leading-tight transition-all duration-500 ${
-                      perspective === 'quick' ? 'text-[18px] md:text-[20px]' : 'text-[20px] md:text-[24px]'
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-[8px] md:gap-[16px] mb-[8px]">
+                    <h3 className={`font-black text-[#0F172A] leading-tight transition-all duration-500 truncate ${
+                      perspective === 'quick' ? 'text-[15px] md:text-[20px]' : 'text-[16px] md:text-[24px]'
                     }`}>
                       {exp.title}
                     </h3>
                     {exp.link && (
-                      <span className="px-[10px] py-[4px] rounded-full bg-[#3B82F6]/10 text-[#3B82F6] text-[10px] font-bold uppercase tracking-wider">
+                      <span className="px-[8px] md:px-[10px] py-[2px] md:py-[4px] rounded-full bg-[#3B82F6]/10 text-[#3B82F6] text-[8px] md:text-[10px] font-bold uppercase tracking-wider self-start md:self-auto">
                         Live
                       </span>
                     )}
                   </div>
-                  <p className="text-micro text-[#64748B] mb-[16px] font-semibold">
+                  <p className="text-[10px] md:text-[11px] text-[#64748B] mb-[12px] md:mb-[16px] font-semibold truncate">
                     {exp.subtitle}
                   </p>
-                  <p className={`text-[#475569] leading-relaxed transition-all duration-500 ${
-                    perspective === 'quick' ? 'text-[13px] md:text-[14px] mb-[12px]' : 'text-[14px] md:text-[16px] mb-[20px]'
+                  <p className={`text-[#475569] transition-all duration-500 truncate md:whitespace-normal ${
+                    perspective === 'quick' ? 'text-[11px] md:text-[14px] mb-[8px] md:mb-[12px]' : 'text-[12px] md:text-[16px] mb-[12px] md:mb-[20px]'
                   }`}>
                     {exp.description}
                   </p>
@@ -709,15 +709,15 @@ export function MainLayout() {
                       {exp.pillars.map((pillar, idx) => {
                         const PillarIcon = pillar.icon;
                         return (
-                          <div key={idx} className="flex items-start gap-[16px] group/pillar">
+                          <div key={idx} className="flex items-start md:items-center gap-[8px] md:gap-[16px] group/pillar">
                             {/* Glowing Icon Container */}
-                            <div className={`flex-shrink-0 rounded-[12px] bg-white/70 border border-white flex items-center justify-center shadow-sm group-hover/pillar:scale-110 group-hover/pillar:border-[#3B82F6]/50 transition-all duration-[0.4s] ease-[cubic-bezier(0.16,1,0.3,1)] ${
-                              perspective === 'quick' ? 'w-[32px] h-[32px]' : 'w-[40px] h-[40px]'
+                            <div className={`flex-shrink-0 rounded-[10px] md:rounded-[12px] bg-white/70 border border-white flex items-center justify-center shadow-sm group-hover/pillar:scale-110 group-hover/pillar:border-[#3B82F6]/50 transition-all duration-[0.4s] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                              perspective === 'quick' ? 'w-[28px] h-[28px] md:w-[32px] md:h-[32px]' : 'w-[32px] h-[32px] md:w-[40px] md:h-[40px]'
                             }`}>
                               <PillarIcon size={perspective === 'quick' ? 14 : 18} className="text-[#3B82F6] drop-shadow-[0_0_8px_rgba(59,130,246,0.2)]" strokeWidth={2} />
                             </div>
-                            {/* Text Info */}
-                            <div className="flex flex-col gap-[2px]">
+                            {/* Text Info - Hidden on mobile */}
+                            <div className="hidden md:flex flex-col gap-[2px]">
                               <span className={`font-black text-[#0F172A] tracking-wide leading-tight group-hover/pillar:text-[#3B82F6] transition-colors duration-300 ${
                                 perspective === 'quick' ? 'text-[13px]' : 'text-[14px] md:text-[15px]'
                               }`}>
@@ -792,7 +792,7 @@ export function MainLayout() {
         <div className={`grid grid-cols-12 items-start transition-all duration-500 ${
           perspective === 'quick' ? 'gap-[20px] md:gap-[24px]' : 'gap-[32px] md:gap-[48px]'
         }`}>
-          {FAILEARNS.map((item) => (
+          {(isTouch ? FAILEARNS.slice(0, 3) : FAILEARNS).map((item) => (
             <div key={item.obs} className={item.className}>
               <FaiLearnNote 
                 obs={item.obs}
@@ -893,7 +893,7 @@ export function MainLayout() {
             </div>
 
             {/* Echo 4: Human Selfishness */}
-            <div className="col-span-12 md:col-span-5 md:col-start-1 md:translate-y-[64px]">
+            <div className="hidden md:block col-span-12 md:col-span-5 md:col-start-1 md:translate-y-[64px]">
               <EchoFragment 
                 perspective={perspective}
                 content="People hide selfishness like it’s evil. Meanwhile almost every important decision quietly asks: ‘Yeah, but what do I get from this?’"
@@ -908,7 +908,7 @@ export function MainLayout() {
             </div>
 
             {/* Echo 5: Adulthood & Certainty */}
-            <div className="col-span-12 md:col-span-5 md:col-start-8 md:-translate-y-[32px]">
+            <div className="hidden md:block col-span-12 md:col-span-5 md:col-start-8 md:-translate-y-[32px]">
               <EchoFragment 
                 perspective={perspective}
                 content="I think half of adulthood is confidently saying ‘makes sense’ while internally running a full system crash."
@@ -923,7 +923,7 @@ export function MainLayout() {
             </div>
 
             {/* Echo 6: Truth vs Comfort */}
-            <div className="col-span-12 md:col-span-7 md:col-start-3 md:translate-y-[48px]">
+            <div className="hidden md:block col-span-12 md:col-span-7 md:col-start-3 md:translate-y-[48px]">
               <EchoFragment 
                 perspective={perspective}
                 content="Most people don’t actually hate lies. They just hate lies that disturb the version of reality they already got emotionally attached to."
@@ -938,7 +938,7 @@ export function MainLayout() {
             </div>
 
             {/* Echo 7: Emotional Contradictions */}
-            <div className="col-span-12 md:col-span-5 md:col-start-1 md:translate-y-[32px]">
+            <div className="hidden md:block col-span-12 md:col-span-5 md:col-start-1 md:translate-y-[32px]">
               <EchoFragment 
                 perspective={perspective}
                 content="Humans say they want peace, then create chaos the second life becomes emotionally too quiet."
@@ -953,7 +953,7 @@ export function MainLayout() {
             </div>
 
             {/* Echo 8: Awareness */}
-            <div className="col-span-12 md:col-span-5 md:col-start-7 md:translate-y-[16px]">
+            <div className="hidden md:block col-span-12 md:col-span-5 md:col-start-7 md:translate-y-[16px]">
               <EchoFragment 
                 perspective={perspective}
                 content="The scary thing about self-awareness is once you notice your own patterns, you start catching yourself mid-destruction like a spectator with live commentary."
@@ -1206,7 +1206,7 @@ export function MainLayout() {
             I build <span className="text-[#64748B] italic">calm</span> systems, <br />
             and occasionally break them.
           </h1>
-          <p className="max-w-2xl text-[15.5px] text-[#475569] leading-relaxed mb-4">
+          <p className="max-w-2xl text-[15.5px] text-[#475569] leading-relaxed mb-4 hidden md:block">
             A digital craftsman focused on minimalism, robust engineering, and intentional design. 
             Currently exploring the intersection of psychology and interfaces.
           </p>
@@ -1260,7 +1260,7 @@ export function MainLayout() {
             </div>
 
             {/* Dynamic Perspective Details Box */}
-            <div className="min-h-[64px] flex items-start gap-3.5 p-[14px] bg-white/70 border border-slate-100 rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.015)] backdrop-blur-md">
+            <div className="hidden md:flex min-h-[64px] items-start gap-3.5 p-[14px] bg-white/70 border border-slate-100 rounded-[20px] shadow-[0_4px_20px_rgba(15,23,42,0.015)] backdrop-blur-md">
               {/* Dynamic blinking active dot */}
               <div className="relative flex items-center justify-center w-2 h-2 mt-1.5 flex-shrink-0">
                 <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-60 ${
