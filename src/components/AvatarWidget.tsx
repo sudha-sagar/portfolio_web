@@ -4,18 +4,23 @@ import { useGLTF, Environment, ContactShadows } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, FlaskConical, Grid, Radio, Mail } from "lucide-react";
 import * as THREE from "three";
+import { useDeviceCapability, type DeviceTier } from '../hooks/useDeviceCapability';
 
 // Reusable Model component with support for dynamic GLB path and colors
 function Model({ 
   modelPath, 
   proximity, 
   hoveredItem, 
-  positionY 
+  positionY,
+  tier,
+  prefersReducedMotion
 }: { 
   modelPath: string, 
   proximity: number, 
   hoveredItem: string | null, 
-  positionY: number
+  positionY: number,
+  tier: DeviceTier,
+  prefersReducedMotion: boolean
 }) {
   const { scene } = useGLTF(modelPath, true);
   const ref = useRef<THREE.Group>(null);
@@ -44,18 +49,22 @@ function Model({
 
   useFrame((state) => {
     if (ref.current) {
-      // Subtle breathing motion
-      ref.current.position.y = positionY + Math.sin(state.clock.elapsedTime) * 0.02;
+      if (!prefersReducedMotion && (tier === 'A' || tier === 'B')) {
+        // Subtle breathing motion
+        ref.current.position.y = positionY + Math.sin(state.clock.elapsedTime) * 0.02;
+      }
       
       // Scale increases organically with proximity, but restrained
       const targetScale = 1.35 + proximity * 0.08;
       ref.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.05);
       
-      // Minimal parallax rotation influenced by pointer and proximity
-      const targetRotationX = proximity > 0 ? -(state.pointer.y * Math.PI) / 16 * proximity : 0;
-      const targetRotationY = proximity > 0 ? -(state.pointer.x * Math.PI) / 12 * proximity : 0;
-      ref.current.rotation.x += (targetRotationX - ref.current.rotation.x) * 0.05;
-      ref.current.rotation.y += (targetRotationY - ref.current.rotation.y) * 0.05;
+      if (!prefersReducedMotion && (tier === 'A' || tier === 'B')) {
+        // Minimal parallax rotation influenced by pointer and proximity
+        const targetRotationX = proximity > 0 ? -(state.pointer.y * Math.PI) / 16 * proximity : 0;
+        const targetRotationY = proximity > 0 ? -(state.pointer.x * Math.PI) / 12 * proximity : 0;
+        ref.current.rotation.x += (targetRotationX - ref.current.rotation.x) * 0.05;
+        ref.current.rotation.y += (targetRotationY - ref.current.rotation.y) * 0.05;
+      }
     }
 
     // Calm, light-themed material states
@@ -111,17 +120,10 @@ const navItems = [
 export function AvatarWidget({ perspective = "curious" }: { perspective?: string }) {
   const [proximity, setProximity] = useState(0);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [isTouch, setIsTouch] = useState(false);
+  
+  const capability = useDeviceCapability();
+  const isTouch = capability.isTouch;
   const [mobileExpanded, setMobileExpanded] = useState(false);
-
-  useEffect(() => {
-    const checkTouch = () => {
-      setIsTouch(window.matchMedia("(hover: none) and (pointer: coarse)").matches);
-    };
-    checkTouch();
-    window.addEventListener("resize", checkTouch);
-    return () => window.removeEventListener("resize", checkTouch);
-  }, []);
 
   const isQuick = perspective === 'quick';
   const isSkeptical = perspective === 'skeptical';
@@ -129,16 +131,21 @@ export function AvatarWidget({ perspective = "curious" }: { perspective?: string
 
   let targetOpacity = 0.65 + proximity * 0.2;
   let targetScale = 0.95 + proximity * 0.1;
-  let targetFilter = "blur(80px)";
+  let targetFilter = (capability.tier === 'A' || capability.tier === 'B') ? "blur(80px)" : "blur(20px)";
+
+  if (capability.tier === 'C' || capability.tier === 'D') {
+    targetFilter = "none";
+    targetOpacity = 0.15;
+  }
 
   if (isQuick) {
     targetOpacity = 0.08;
     targetScale = 0.92;
-    targetFilter = "blur(60px)";
+    if (capability.tier === 'A' || capability.tier === 'B') targetFilter = "blur(60px)";
   } else if (isSkeptical) {
     targetOpacity = 0.15;
     targetScale = 0.94;
-    targetFilter = "blur(70px)";
+    if (capability.tier === 'A' || capability.tier === 'B') targetFilter = "blur(70px)";
   }
 
   const hoverScale = isCurious ? 1.12 : 1.05;
@@ -257,18 +264,22 @@ export function AvatarWidget({ perspective = "curious" }: { perspective?: string
 
         {/* Atmospheric Radial Depth Anchor */}
         <div 
-          className="absolute top-[28%] left-[38%] -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] md:w-[340px] md:h-[340px] rounded-full pointer-events-none z-10 transition-all duration-[0.8s] ease-out"
+          className={`absolute top-[28%] left-[38%] -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] md:w-[340px] md:h-[340px] rounded-full pointer-events-none z-10 transition-all duration-[0.8s] ease-out ${(capability.tier === 'C' || capability.tier === 'D') ? 'bg-[#F1F5F9]' : ''}`}
           style={{
-            background: "radial-gradient(circle, rgba(203, 213, 225, 0.28) 0%, rgba(226, 232, 240, 0.12) 50%, rgba(255, 255, 255, 0) 100%)",
+            background: (capability.tier === 'A' || capability.tier === 'B') ? "radial-gradient(circle, rgba(203, 213, 225, 0.28) 0%, rgba(226, 232, 240, 0.12) 50%, rgba(255, 255, 255, 0) 100%)" : undefined,
             filter: targetFilter,
             opacity: targetOpacity,
             transform: `translate(-50%, -50%) scale(${targetScale})`
           }}
         />
 
-        {/* 3D Canvas - Light Minimal Configuration */}
+        {/* 3D Canvas - Adaptive Configuration */}
         <div className="absolute top-[28%] left-[38%] -translate-x-1/2 -translate-y-1/2 w-[400px] h-[600px] md:w-[500px] pointer-events-none z-20">
-          <Canvas camera={{ position: [0, 0, 15], fov: 45 }} style={{ pointerEvents: 'auto' }}>
+          <Canvas 
+            camera={{ position: [0, 0, 15], fov: 45 }} 
+            style={{ pointerEvents: 'auto' }}
+            frameloop={(capability.tier === 'A' || capability.tier === 'B') ? "always" : "demand"}
+          >
             <ambientLight intensity={1.5 + proximity * 0.2} color="#FFFFFF" />
             
             {/* Soft Daylight Setup */}
@@ -278,16 +289,25 @@ export function AvatarWidget({ perspective = "curious" }: { perspective?: string
             
             <Suspense fallback={<Fallback />}>
               <group>
-                <Model modelPath="/avatar2.glb" proximity={proximity} hoveredItem={hoveredItem} positionY={0} />
-                {/* Soft environmental grounding shadow */}
-                <ContactShadows 
-                  position={[0, -3.5, 0]} 
-                  opacity={0.55 + proximity * 0.15} 
-                  scale={12} 
-                  blur={3.5} 
-                  far={4} 
-                  color="#0F172A" 
+                <Model 
+                  modelPath="/avatar2_optimized.glb" 
+                  proximity={proximity} 
+                  hoveredItem={hoveredItem} 
+                  positionY={0} 
+                  tier={capability.tier}
+                  prefersReducedMotion={capability.prefersReducedMotion}
                 />
+                {/* Real-time shadows only for Tier A and B */}
+                {(capability.tier === 'A' || capability.tier === 'B') && (
+                  <ContactShadows 
+                    position={[0, -3.5, 0]} 
+                    opacity={0.55 + proximity * 0.15} 
+                    scale={12} 
+                    blur={3.5} 
+                    far={4} 
+                    color="#0F172A" 
+                  />
+                )}
               </group>
             </Suspense>
 
@@ -300,4 +320,5 @@ export function AvatarWidget({ perspective = "curious" }: { perspective?: string
 }
 
 // Preload the heavy 3D model asset so it starts downloading immediately on bundle load
-useGLTF.preload("/avatar2.glb");
+// Preload the heavy 3D model asset so it starts downloading immediately on bundle load
+useGLTF.preload("/avatar2_optimized.glb");

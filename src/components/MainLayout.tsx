@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { 
   MoveRight, Database, PenTool, Brain, Network, Layers, Lightbulb,
   Smartphone, RefreshCw, Zap, Shield, MapPin, Mic, Sliders,
@@ -7,6 +7,7 @@ import {
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { AvatarWidget } from "./AvatarWidget";
 import { ResumeArchive } from "./ResumeArchive";
+import { useDeviceCapability } from '../hooks/useDeviceCapability';
 
 // 1. Data-Driven Experiments configuration for extremely easy updating
 const EXPERIMENTS = [
@@ -124,18 +125,16 @@ function CognitiveObject({
   className, 
   bgColor, 
   borderRadius, 
-  perspective = "curious", 
-  isTouch = false, 
-  prefersReducedMotion = false 
+  perspective = "curious"
 }: { 
   children: React.ReactNode, 
   className?: string, 
   bgColor: string, 
   borderRadius: string, 
-  perspective?: string, 
-  isTouch?: boolean, 
-  prefersReducedMotion?: boolean 
+  perspective?: string
 }) {
+  const capability = useDeviceCapability();
+  const { isTouch, prefersReducedMotion, tier } = capability;
   const ref = React.useRef<HTMLDivElement>(null);
   
   const x = useMotionValue(0);
@@ -185,7 +184,9 @@ function CognitiveObject({
           hover: { scale: 1.015, y: -6 }
         }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className={`absolute inset-0 overflow-hidden backdrop-blur-md border-[1.5px] border-white/80 shadow-[0_12px_40px_rgba(0,0,0,0.04),inset_0_2px_4px_rgba(255,255,255,0.8)] group-hover:shadow-[0_24px_64px_rgba(0,0,0,0.08),inset_0_2px_6px_rgba(255,255,255,1)] group-hover:border-white transition-all duration-[0.6s] ease-[cubic-bezier(0.16,1,0.3,1)] ${borderRadius}`}
+        className={`absolute inset-0 overflow-hidden ${
+          tier === 'C' || tier === 'D' ? 'bg-white/95 border-slate-200' : 'backdrop-blur-md border-[1.5px] border-white/80'
+        } shadow-[0_12px_40px_rgba(0,0,0,0.04),inset_0_2px_4px_rgba(255,255,255,0.8)] group-hover:shadow-[0_24px_64px_rgba(0,0,0,0.08),inset_0_2px_6px_rgba(255,255,255,1)] group-hover:border-white transition-all duration-[0.6s] ease-[cubic-bezier(0.16,1,0.3,1)] ${borderRadius}`}
       >
         <div className={`absolute inset-0 ${bgColor} opacity-90`} />
       </motion.div>
@@ -207,14 +208,12 @@ function CognitiveObject({
 }
 
 function FloatingCognitiveSpace({ 
-  perspective = "curious",
-  isTouch = false,
-  prefersReducedMotion = false
+  perspective = "curious"
 }: { 
-  perspective?: string,
-  isTouch?: boolean,
-  prefersReducedMotion?: boolean
+  perspective?: string
 }) {
+  const capability = useDeviceCapability();
+  const { isTouch, prefersReducedMotion } = capability;
   const isQuick = perspective === 'quick';
 
   return (
@@ -227,8 +226,6 @@ function FloatingCognitiveSpace({
         {/* 1. Main Identity Anchor */}
         <CognitiveObject 
           perspective={perspective}
-          isTouch={isTouch}
-          prefersReducedMotion={prefersReducedMotion}
           className="col-span-12 md:col-span-7"
           bgColor="bg-[#FFFFFF]" 
           borderRadius="rounded-[36px]"
@@ -248,8 +245,6 @@ function FloatingCognitiveSpace({
         {/* 2. Philosophy (Top Right green-ish panel) */}
         <CognitiveObject 
           perspective={perspective}
-          isTouch={isTouch}
-          prefersReducedMotion={prefersReducedMotion}
           className="col-span-12 md:col-span-5 md:col-start-8"
           bgColor="bg-[#E6F4F8]" 
           borderRadius="rounded-[32px_32px_32px_12px]"
@@ -265,8 +260,6 @@ function FloatingCognitiveSpace({
         {/* 3. Current State */}
         <CognitiveObject 
           perspective={perspective}
-          isTouch={isTouch}
-          prefersReducedMotion={prefersReducedMotion}
           className={`col-span-12 md:col-span-5 md:col-start-1 transition-all duration-500 ${
             isQuick ? 'md:mt-0' : 'md:mt-[64px]'
           }`}
@@ -284,8 +277,6 @@ function FloatingCognitiveSpace({
         {/* 4. Current Focus */}
         <CognitiveObject 
           perspective={perspective}
-          isTouch={isTouch}
-          prefersReducedMotion={prefersReducedMotion}
           className={`col-span-12 md:col-span-7 md:col-start-6 transition-all duration-500 ${
             isQuick ? 'md:mt-0' : 'md:mt-[48px]'
           }`}
@@ -326,8 +317,6 @@ function FloatingCognitiveSpace({
         {/* 5. Identity */}
         <CognitiveObject 
           perspective={perspective}
-          isTouch={isTouch}
-          prefersReducedMotion={prefersReducedMotion}
           className={`col-span-12 md:col-span-6 md:col-start-1 transition-all duration-500 ${
             isQuick ? 'md:mt-0' : 'md:mt-[64px]'
           }`}
@@ -379,8 +368,6 @@ function FloatingCognitiveSpace({
         {/* 6. Learning Style */}
         <CognitiveObject 
           perspective={perspective}
-          isTouch={isTouch}
-          prefersReducedMotion={prefersReducedMotion}
           className={`col-span-12 md:col-span-6 md:col-start-7 transition-all duration-500 ${
             isQuick ? 'md:mt-0' : 'md:mt-[64px]'
           }`}
@@ -482,9 +469,7 @@ function FaiLearnNote({
   bgColor, 
   rotationClass, 
   className, 
-  perspective = "deep",
-  isTouch = false,
-  prefersReducedMotion = false
+  perspective = "deep"
 }: {
   obs: string;
   tag: string;
@@ -495,9 +480,9 @@ function FaiLearnNote({
   rotationClass: string;
   className?: string;
   perspective?: string;
-  isTouch?: boolean;
-  prefersReducedMotion?: boolean;
 }) {
+  const capability = useDeviceCapability();
+  const { isTouch, prefersReducedMotion } = capability;
   const [isExpanded, setIsExpanded] = useState(false);
   const isQuick = perspective === 'quick';
 
@@ -538,7 +523,6 @@ function FaiLearnNote({
         {primary}
       </h3>
 
-      {/* Secondary Realization (Fades in softly on hover / instantly visible in quick mode / accordion on tap) */}
       <div className={`overflow-hidden transition-all duration-[0.6s] ease-[cubic-bezier(0.16,1,0.3,1)] ${
         isQuick 
           ? "max-h-[300px] opacity-100" 
@@ -553,11 +537,10 @@ function FaiLearnNote({
         </div>
       </div>
 
-      {/* Touch indicator slab */}
       {isTouch && !isQuick && (
-        <div className="mt-[16px] flex justify-end">
-          <span className="text-[9px] font-bold uppercase tracking-wider text-[#8A7A6E]/50">
-            {isExpanded ? "[ Tap to collapse ]" : "[ Tap to reflect ]"}
+        <div className="flex justify-end mt-[16px]">
+          <span className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#64748B]/40">
+            {isExpanded ? "[ Tap to close ]" : "[ Tap to analyze ]"}
           </span>
         </div>
       )}
@@ -573,8 +556,8 @@ function EchoFragment({
   delay, 
   colorClass, 
   perspective = "deep",
-  isTouch = false,
-  prefersReducedMotion = false
+  isActive,
+  onToggle
 }: {
   content: string;
   tag: string;
@@ -583,26 +566,25 @@ function EchoFragment({
   delay: number;
   colorClass: string;
   perspective?: string;
-  isTouch?: boolean;
-  prefersReducedMotion?: boolean;
+  isActive: boolean;
+  onToggle: () => void;
 }) {
+  const { isTouch, prefersReducedMotion } = useDeviceCapability();
   const [isHovered, setIsHovered] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
   const isQuick = perspective === 'quick';
   const isSkeptical = perspective === 'skeptical';
 
-  // Floating logic adjustments: disable floats in Skeptical, Quick Scan, touch, or prefers-reduced-motion
   const shouldFloat = !isQuick && !isSkeptical && !isTouch && !prefersReducedMotion;
   const yAnim = shouldFloat ? (isHovered ? -12 : [0, -10, 0]) : 0;
   const xAnim = shouldFloat ? (isHovered ? 4 : [0, 6, 0]) : 0;
 
   const handleTap = () => {
     if (isTouch) {
-      setIsFocused(!isFocused);
+      onToggle();
     }
   };
 
-  const active = isTouch ? isFocused : isHovered;
+  const active = isTouch ? isActive : isHovered;
 
   return (
     <motion.div
@@ -612,7 +594,7 @@ function EchoFragment({
       animate={{
         y: yAnim,
         x: xAnim,
-        scale: isTouch && isFocused ? 1.015 : 1
+        scale: isTouch && isActive ? 1.015 : 1
       }}
       transition={{
         y: isHovered ? { duration: 0.6, ease: [0.22, 1, 0.36, 1] } : { duration: floatDuration, repeat: Infinity, ease: "easeInOut", delay },
@@ -622,22 +604,19 @@ function EchoFragment({
       style={{ cursor: "pointer" }}
       className={`relative p-[24px] md:p-[32px] border border-white/20 bg-white/5 backdrop-blur-[2px] shadow-[0_4px_24px_rgba(0,0,0,0.02)] rounded-[32px] transition-all duration-[0.8s] cubic-bezier(0.22,1,0.36,1) ${colorClass} group`}
     >
-      {/* Subtle atmospheric glow behind the fragment */}
       <div className={`absolute inset-0 -z-10 rounded-[32px] bg-gradient-to-tr from-[#EEF4FF]/10 to-[#F5F1FF]/10 blur-xl transition-opacity duration-700 pointer-events-none ${
         active ? "opacity-100" : "opacity-0"
       }`}></div>
 
-      {/* Instability breathing opacity / Tap-to-sharpen focus */}
       <motion.div
         animate={
           isTouch
-            ? (isFocused ? { opacity: 1, filter: "blur(0px)" } : { opacity: 0.55, filter: "blur(1.5px)" })
+            ? (isActive ? { opacity: 1, filter: "blur(0px)" } : { opacity: 0.55, filter: "blur(1.5px)" })
             : (isHovered ? { opacity: 1, filter: "blur(0px)" } : { opacity: [0.35, 0.5, 0.35], filter: ["blur(0.5px)", "blur(1.2px)", "blur(0.5px)"] })
         }
         transition={active ? { duration: 0.4 } : { duration: floatDuration * 1.5, repeat: Infinity, ease: "easeInOut", delay }}
         className="flex flex-col gap-[12px]"
       >
-        {/* Header Metadata */}
         <div className={`flex items-center justify-between text-[9px] font-bold uppercase tracking-[0.15em] transition-colors duration-500 ${
           active ? "text-[#64748B]/90" : "text-[#64748B]/60"
         }`}>
@@ -649,7 +628,6 @@ function EchoFragment({
           </div>
         </div>
 
-        {/* Thought Content */}
         <p className={`text-[14px] md:text-[15px] font-semibold leading-relaxed transition-colors duration-500 ${
           active ? "text-[#0F172A]" : "text-[#64748B]"
         }`}>
@@ -661,42 +639,10 @@ function EchoFragment({
 }
 
 export function MainLayout() {
-  const [perspective, setPerspective] = useState<"quick" | "curious" | "skeptical">("curious");
+  const [perspective, setPerspective] = useState("curious");
+  const [activeEchoIndex, setActiveEchoIndex] = useState<number | null>(null);
   const [resumeOpen, setResumeOpen] = useState(false);
-  const [isTouch, setIsTouch] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const checkTouch = () => {
-      setIsTouch(window.matchMedia("(hover: none) and (pointer: coarse)").matches);
-    };
-    const checkMotion = () => {
-      setPrefersReducedMotion(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    };
-    checkTouch();
-    checkMotion();
-    
-    const touchMediaQuery = window.matchMedia("(hover: none) and (pointer: coarse)");
-    const motionMediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    if (touchMediaQuery.addEventListener) {
-      touchMediaQuery.addEventListener("change", checkTouch);
-      motionMediaQuery.addEventListener("change", checkMotion);
-    } else {
-      touchMediaQuery.addListener(checkTouch);
-      motionMediaQuery.addListener(checkMotion);
-    }
-
-    return () => {
-      if (touchMediaQuery.removeEventListener) {
-        touchMediaQuery.removeEventListener("change", checkTouch);
-        motionMediaQuery.removeEventListener("change", checkMotion);
-      } else {
-        touchMediaQuery.removeListener(checkTouch);
-        motionMediaQuery.removeListener(checkMotion);
-      }
-    };
-  }, []);
+  const { isTouch, prefersReducedMotion } = useDeviceCapability();
 
   const renderAbout = () => (
     <Section 
@@ -704,11 +650,11 @@ export function MainLayout() {
       title="About"
       className={perspective === 'quick' ? 'mb-[56px] md:mb-[64px]' : 'mb-[96px] md:mb-[128px]'}
     >
-      <FloatingCognitiveSpace 
-        perspective={perspective} 
-        isTouch={isTouch} 
-        prefersReducedMotion={prefersReducedMotion} 
-      />
+      <div className="pt-[140px] md:pt-[180px] pb-[40px] md:pb-[80px]">
+        <FloatingCognitiveSpace 
+          perspective={perspective}
+        />
+      </div>
     </Section>
   );
 
@@ -839,7 +785,6 @@ export function MainLayout() {
       className={perspective === 'quick' ? 'mb-[56px] md:mb-[64px]' : 'mb-[96px] md:mb-[128px]'}
     >
       <div className="relative w-full py-[16px]">
-        {/* Subtle warm atmospheric lighting backdrop glow - Muted on Touch / Reduced Motion */}
         {!(isTouch || prefersReducedMotion) && (
           <div className="absolute inset-0 -z-10 bg-radial from-[#F7EBDD]/15 via-transparent to-transparent pointer-events-none blur-3xl"></div>
         )}
@@ -849,8 +794,7 @@ export function MainLayout() {
         }`}>
           {FAILEARNS.map((item) => (
             <div key={item.obs} className={item.className}>
-              <FaiLearnNote
-                perspective={perspective}
+              <FaiLearnNote 
                 obs={item.obs}
                 tag={item.tag}
                 time={item.time}
@@ -858,8 +802,8 @@ export function MainLayout() {
                 secondary={item.secondary}
                 bgColor={item.bgColor}
                 rotationClass={item.rotationClass}
-                isTouch={isTouch}
-                prefersReducedMotion={prefersReducedMotion}
+                className={item.className}
+                perspective={perspective}
               />
             </div>
           ))}
@@ -913,8 +857,8 @@ export function MainLayout() {
                 floatDuration={8}
                 delay={0}
                 colorClass="bg-[#EEF4FF]/20 hover:bg-[#EEF4FF]/30"
-                isTouch={isTouch}
-                prefersReducedMotion={prefersReducedMotion}
+                isActive={activeEchoIndex === 0}
+                onToggle={() => setActiveEchoIndex(activeEchoIndex === 0 ? null : 0)}
               />
             </div>
 
@@ -928,8 +872,8 @@ export function MainLayout() {
                 floatDuration={9.5}
                 delay={1.5}
                 colorClass="bg-[#F3F6FB]/20 hover:bg-[#F3F6FB]/30"
-                isTouch={isTouch}
-                prefersReducedMotion={prefersReducedMotion}
+                isActive={activeEchoIndex === 1}
+                onToggle={() => setActiveEchoIndex(activeEchoIndex === 1 ? null : 1)}
               />
             </div>
 
@@ -943,8 +887,8 @@ export function MainLayout() {
                 floatDuration={7}
                 delay={0.5}
                 colorClass="bg-[#F5F1FF]/25 hover:bg-[#F5F1FF]/35"
-                isTouch={isTouch}
-                prefersReducedMotion={prefersReducedMotion}
+                isActive={activeEchoIndex === 2}
+                onToggle={() => setActiveEchoIndex(activeEchoIndex === 2 ? null : 2)}
               />
             </div>
 
@@ -958,8 +902,8 @@ export function MainLayout() {
                 floatDuration={11}
                 delay={2.2}
                 colorClass="bg-[#F8FAFC]/30 hover:bg-[#F8FAFC]/40"
-                isTouch={isTouch}
-                prefersReducedMotion={prefersReducedMotion}
+                isActive={activeEchoIndex === 3}
+                onToggle={() => setActiveEchoIndex(activeEchoIndex === 3 ? null : 3)}
               />
             </div>
 
@@ -973,8 +917,8 @@ export function MainLayout() {
                 floatDuration={8.5}
                 delay={1}
                 colorClass="bg-[#EEF4FF]/20 hover:bg-[#EEF4FF]/30"
-                isTouch={isTouch}
-                prefersReducedMotion={prefersReducedMotion}
+                isActive={activeEchoIndex === 4}
+                onToggle={() => setActiveEchoIndex(activeEchoIndex === 4 ? null : 4)}
               />
             </div>
 
@@ -988,8 +932,8 @@ export function MainLayout() {
                 floatDuration={10}
                 delay={0.8}
                 colorClass="bg-[#F3F6FB]/25 hover:bg-[#F3F6FB]/35"
-                isTouch={isTouch}
-                prefersReducedMotion={prefersReducedMotion}
+                isActive={activeEchoIndex === 5}
+                onToggle={() => setActiveEchoIndex(activeEchoIndex === 5 ? null : 5)}
               />
             </div>
 
@@ -1003,8 +947,8 @@ export function MainLayout() {
                 floatDuration={9}
                 delay={3}
                 colorClass="bg-[#F5F1FF]/20 hover:bg-[#F5F1FF]/30"
-                isTouch={isTouch}
-                prefersReducedMotion={prefersReducedMotion}
+                isActive={activeEchoIndex === 6}
+                onToggle={() => setActiveEchoIndex(activeEchoIndex === 6 ? null : 6)}
               />
             </div>
 
@@ -1018,8 +962,8 @@ export function MainLayout() {
                 floatDuration={10.5}
                 delay={1.8}
                 colorClass="bg-[#F8FAFC]/30 hover:bg-[#F8FAFC]/40"
-                isTouch={isTouch}
-                prefersReducedMotion={prefersReducedMotion}
+                isActive={activeEchoIndex === 7}
+                onToggle={() => setActiveEchoIndex(activeEchoIndex === 7 ? null : 7)}
               />
             </div>
 
